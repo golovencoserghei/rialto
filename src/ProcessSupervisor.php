@@ -427,7 +427,14 @@ class ProcessSupervisor
             $socketErrorCode = constant($socketErrorMatches[1]);
 
             $elapsedTime = microtime(true) - $startTimestamp;
-            if ($socketErrorCode === SOCKET_EAGAIN && $readTimeout !== null && $elapsedTime >= $readTimeout) {
+
+            if (defined('SOCKET_EAGAIN')) {
+                $SOCKET_EAGAIN = SOCKET_EAGAIN;
+            } else {
+                $SOCKET_EAGAIN = 11;
+            }
+
+            if ($socketErrorCode === $SOCKET_EAGAIN && $readTimeout !== null && $elapsedTime >= $readTimeout) {
                 throw new Exceptions\ReadSocketTimeoutException($readTimeout, $exception);
             }
 
